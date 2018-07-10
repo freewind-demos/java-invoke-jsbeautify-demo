@@ -1,5 +1,6 @@
 package demo;
 
+import jdk.nashorn.api.scripting.ScriptObjectMirror;
 import org.apache.commons.io.FileUtils;
 
 import javax.script.Invocable;
@@ -11,7 +12,6 @@ import java.nio.charset.Charset;
 
 public class Hello {
 
-
     public static void main(String[] args) throws Exception {
         ScriptEngineManager manager = new ScriptEngineManager();
         ScriptEngine engine = manager.getEngineByName("JavaScript");
@@ -21,9 +21,12 @@ public class Hello {
     }
 
     private static void hello(ScriptEngine engine, Invocable inv) throws Exception {
-        engine.eval(contentOf(new File("./hello.js")));
-        String greeting = (String) inv.invokeFunction("hello", "JS in Java");
-        System.out.println(greeting);
+        Global global = new Global();
+        engine.put("global", global);
+        engine.eval(contentOf(new File("./beautify.js")));
+
+        String result = global.format("var a =     111;");
+        System.out.println(result);
     }
 
     private static String contentOf(File file) throws IOException {
